@@ -1,7 +1,7 @@
 import Hero from "./Hero";
 import Navbar from "./Navbar";
 import TechnologySection from "./TechnologySection";
-
+import Footer from "./Footer";
 
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
       <Navbar />
       <Hero />
       <TechnologySection />
+      <Footer />
     </>
   )
 }
