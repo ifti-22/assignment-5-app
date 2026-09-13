@@ -1,5 +1,6 @@
 import Hero from "./Hero";
 import Navbar from "./Navbar";
+import TechnologySection from "./TechnologySection";
 
 
 
@@ -10,6 +11,7 @@ function App() {
     <>
       <Navbar />
       <Hero />
+      <TechnologySection />
     </>
   )
 }
