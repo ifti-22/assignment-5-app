@@ -65,15 +65,15 @@ Ans: Props are data passed from a parent component to a child component. State i
 
 3. What does the `useState` hook do, and where did you use it in this project?
 
-Ans: `useState` lets a React component store and update data. I used it in `TechnologySection.tsx` to store the selected technologies, loading status, and error state.
+Ans: useState lets a React component store and update data. I used it in "TechnologySection.tsx" to store the selected technologies, loading status, and error state.
 
 4. What does the `useEffect` hook do, and why did you need it to load the JSON data?
 
-Ans: `useEffect` runs code after a component renders. I used it in `TechnologySection.tsx` to fetch the technology JSON data when the component loads.
+Ans: useEffect runs code after a component renders. I used it in "TechnologySection.tsx" to fetch the technology JSON data when the component loads.
 
 5. Why does every item in a `.map()` list need a unique `key` prop?
 
-Ans: React uses the `key` to identify each item in a list. A unique key helps React efficiently update the correct item when the list changes.
+Ans: React uses the "key" to identify each item in a list. A unique key helps React efficiently update the correct item when the list changes.
 
 6. What is conditional rendering? Show one place you used it.
 
@@ -81,7 +81,7 @@ Ans: Conditional rendering means showing different UI depending on a condition.
 
 I used it to show an empty-stack message when no technologies have been selected:
 
-```tsx
+
 {selectedTechnologies.length === 0 ? (
   <p>Your stack is empty. Add technologies to build your stack.</p>
 ) : (
