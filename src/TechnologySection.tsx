@@ -3,227 +3,242 @@ import TechnologyCard from "./TechnologyCard";
 import { toast } from "react-toastify";
 
 type Technology = {
-    id: string;
-    name: string;
-    category: string;
-    description: string;
-    icon: string;
-    rating: number;
-    difficulty: string;
-    badge: string;
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  icon: string;
+  rating: number;
+  difficulty: string;
+  badge: string;
 };
 
 const TechnologySection = () => {
-    const [technologies, setTechnologies] = useState<Technology[]>([]);
-    const [selectedTechnologies, setSelectedTechnologies] = useState<Technology[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [technologies, setTechnologies] = useState<Technology[]>([]);
+  const [selectedTechnologies, setSelectedTechnologies] = useState<
+    Technology[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    // Fetch technologies
-    useEffect(() => {
-        const fetchTechnologies = async () => {
-            try {
-                setLoading(true);
+  // Fetch technologies
+  useEffect(() => {
+    const fetchTechnologies = async () => {
+      try {
+        setLoading(true);
 
-                const response = await fetch(
-                    `${import.meta.env.BASE_URL}data/technologies.json`
-                );
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch technologies");
-                }
-
-                const data: Technology[] = await response.json();
-
-                setTechnologies(data);
-            } catch (error) {
-                console.error(error);
-                setError("Failed to load technologies.");
-                toast.error("Failed to load technologies.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTechnologies();
-    }, []);
-
-    // Add technology to stack
-    const addToStack = (technology: Technology) => {
-        const alreadyAdded = selectedTechnologies.some(
-            (item) => item.id === technology.id
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}data/technologies.json`
         );
 
-        if (alreadyAdded) {
-            toast.warning(`${technology.name} is already in your stack.`);
-            return;
+        if (!response.ok) {
+          throw new Error("Failed to fetch technologies");
         }
 
-        setSelectedTechnologies([
-            ...selectedTechnologies,
-            technology,
-        ]);
+        const data: Technology[] = await response.json();
 
-        toast.success(`${technology.name} added to your stack!`);
+        setTechnologies(data);
+      } catch (error) {
+        console.error(error);
+        setError("Failed to load technologies.");
+        toast.error("Failed to load technologies.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    // Remove one technology
-    const removeFromStack = (id: string) => {
-        const technology = selectedTechnologies.find(
-            (item) => item.id === id
-        );
+    fetchTechnologies();
+  }, []);
 
-        setSelectedTechnologies(
-            selectedTechnologies.filter(
-                (technology) => technology.id !== id
-            )
-        );
+  // Add technology to stack
+  const addToStack = (technology: Technology) => {
+    const alreadyAdded = selectedTechnologies.some(
+      (item) => item.id === technology.id
+    );
 
-        if (technology) {
-            toast.info(`${technology.name} removed from your stack.`);
-        }
-    };
+    // Duplicate technology
+    if (alreadyAdded) {
+      toast.warning(`${technology.name} is already in your stack.`);
+      return;
+    }
 
-    // Remove all technologies
-    const removeAll = () => {
-        if (selectedTechnologies.length === 0) {
-            toast.warning("Your stack is already empty.");
-            return;
-        }
+    // Add technology
+    setSelectedTechnologies((prev) => [...prev, technology]);
 
-        setSelectedTechnologies([]);
+    toast.success(`${technology.name} added to your stack!`);
+  };
 
-        toast.info("All technologies removed from your stack.");
-    };
+  // Remove one technology
+  const removeFromStack = (id: string) => {
+    const technology = selectedTechnologies.find(
+      (item) => item.id === id
+    );
 
-    return (
-        <section className="mx-auto max-w-7xl px-6 py-20">
+    setSelectedTechnologies((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
 
-            <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+    if (technology) {
+      toast.info(`${technology.name} removed from your stack.`);
+    }
+  };
 
-                {/* Technologies */}
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-800">
-                        Explore the Technologies
-                    </h2>
+  // Remove all technologies
+  const removeAll = () => {
+    if (selectedTechnologies.length === 0) {
+      toast.warning("Your stack is already empty.");
+      return;
+    }
 
-                    <p className="mt-2 text-sm text-slate-500">
-                        Pick one technology per category to build your ideal stack.
-                    </p>
+    setSelectedTechnologies([]);
 
-                    {/* Loading State */}
-                    {loading && (
-                        <div className="flex min-h-[300px] items-center justify-center">
-                            <div className="flex flex-col items-center gap-3">
+    toast.info("All technologies removed from your stack.");
+  };
 
-                                <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-pink-500"></div>
+  return (
+    <section
+      id="technologies"
+      className="mx-auto max-w-6xl px-5 py-20 sm:px-6 lg:px-8"
+    >
+      {/* Section Header */}
+      <div className="mb-7">
+        <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+          Explore the{" "}
+          <span className="brand-gradient-text">
+            Technologies
+          </span>
+        </h2>
 
-                                <p className="text-sm text-slate-500">
-                                    Loading technologies...
-                                </p>
+        <p className="mt-2 text-sm text-slate-500">
+          Pick technologies to build your ideal stack.
+        </p>
+      </div>
 
-                            </div>
-                        </div>
-                    )}
+      {/* Main Layout */}
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_250px]">
+        {/* Technologies */}
+        <div>
+          {/* Loading State */}
+          {loading && (
+            <div className="flex min-h-80 items-center justify-center rounded-xl border border-slate-200 bg-white">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-pink-500" />
 
-                    {/* Error State */}
-                    {!loading && error && (
-                        <div className="mt-8 rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-                            <p className="text-sm text-red-500">
-                                {error}
-                            </p>
-                        </div>
-                    )}
+                <p className="text-sm text-slate-500">
+                  Loading technologies...
+                </p>
+              </div>
+            </div>
+          )}
 
-                    {/* Technology Cards */}
-                    {!loading && !error && (
-                        <div className="mt-8 grid gap-6 md:grid-cols-2">
-                            {technologies.map((technology) => (
-                                <TechnologyCard
-                                    key={technology.id}
-                                    technology={technology}
-                                    isAdded={selectedTechnologies.some(
-                                        (item) => item.id === technology.id
-                                    )}
-                                    onAdd={addToStack}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
+          {/* Error State */}
+          {!loading && error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+              <p className="text-sm text-red-500">
+                {error}
+              </p>
+            </div>
+          )}
 
-                {/* Your Stack */}
-                <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-20">
+          {/* Technology Cards */}
+          {!loading && !error && (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {technologies.map((technology) => (
+                <TechnologyCard
+                  key={technology.id}
+                  technology={technology}
+                  isAdded={selectedTechnologies.some(
+                    (item) => item.id === technology.id
+                  )}
+                  onAdd={addToStack}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-slate-800">
-                            Your Stack
-                        </h2>
+        {/* Your Stack */}
+        <aside className="h-fit rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-24">
+          {/* Stack Header */}
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              Your Stack
+            </h3>
 
-                        <span className="text-sm text-slate-500">
-                            {selectedTechnologies.length} Technology
-                            {selectedTechnologies.length !== 1
-                                ? "ies"
-                                : "y"} Selected
-                        </span>
+            <p className="mt-1 text-xs text-slate-400">
+              {selectedTechnologies.length} Technology
+              {selectedTechnologies.length !== 1
+                ? "ies"
+                : "y"}{" "}
+              Selected
+            </p>
+          </div>
+
+          {/* Empty Stack */}
+          {selectedTechnologies.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-xs leading-5 text-slate-400">
+                Your stack is empty.
+                <br />
+                Add technologies to build your stack.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Selected Technologies */}
+              <div className="mt-4 space-y-2">
+                {selectedTechnologies.map((technology) => (
+                  <div
+                    key={technology.id}
+                    className="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2"
+                  >
+                    {/* Icon */}
+                    <img
+                      src={technology.icon}
+                      alt={technology.name}
+                      className="h-7 w-7 shrink-0 object-contain"
+                    />
+
+                    {/* Name & Category */}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-medium text-slate-800">
+                        {technology.name}
+                      </p>
+
+                      <p className="truncate text-[10px] text-slate-400">
+                        {technology.category}
+                      </p>
                     </div>
 
-                    {/* Empty Stack */}
-                    {selectedTechnologies.length === 0 ? (
-                        <p className="mt-8 text-center text-sm text-slate-400">
-                            Your stack is empty. Add technologies to build your stack.
-                        </p>
-                    ) : (
-                        <>
-                            {/* Selected Technologies */}
-                            <div className="mt-6 space-y-3">
-                                {selectedTechnologies.map((technology) => (
-                                    <div
-                                        key={technology.id}
-                                        className="flex items-center gap-3 rounded-lg border border-slate-100 p-3"
-                                    >
-                                        <img
-                                            src={technology.icon}
-                                            alt={technology.name}
-                                            className="h-8 w-8 object-contain"
-                                        />
+                    {/* Remove */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeFromStack(technology.id)
+                      }
+                      className="shrink-0 text-sm text-slate-400 transition-colors hover:text-red-500"
+                      aria-label={`Remove ${technology.name}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-                                        <div className="min-w-0 flex-1">
-                                            <p className="truncate text-sm font-medium text-slate-800">
-                                                {technology.name}
-                                            </p>
-
-                                            <p className="text-xs text-slate-400">
-                                                {technology.category}
-                                            </p>
-                                        </div>
-
-                                        <button
-                                            onClick={() =>
-                                                removeFromStack(technology.id)
-                                            }
-                                            className="text-sm text-slate-400 transition-colors hover:text-red-500"
-                                            aria-label={`Remove ${technology.name}`}
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Remove All */}
-                            <button
-                                onClick={removeAll}
-                                className="mt-5 w-full rounded-lg border border-red-200 py-2 text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
-                            >
-                                Remove All
-                            </button>
-                        </>
-                    )}
-                </aside>
-            </div>
-        </section>
-    );
+              {/* Remove All */}
+              <button
+                type="button"
+                onClick={removeAll}
+                className="mt-5 w-full rounded-lg border border-red-200 py-2 text-xs font-medium text-red-500 transition-colors hover:bg-red-50"
+              >
+                Remove All
+              </button>
+            </>
+          )}
+        </aside>
+      </div>
+    </section>
+  );
 };
 
 export default TechnologySection;
